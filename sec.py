@@ -20,8 +20,12 @@ class interact(object):
 		html = response.read()
 		for line in html:
 			if line.rstrip() == "2":
+                                if enabled == 0:
+                                        print "enabling motion sensor"
 				enabled = 1
 			if line.rstrip() == "3":
+                                if enabled == 1:
+                                        print "disabling sensor"
 				enabled = 0
 			if line.rstrip() == "1":
 				return "picTime"
@@ -41,18 +45,19 @@ while 1:
                 response = urllib2.urlopen('http://192.168.1.143/api.php?sec=true&newPic=true&picTime=' + timeStamp)
                 camera.close()
         
-        if enabled == "1":
+        if enabled == 1:
                 inputValue = GPIO.input(detectPin)
                 if inputValue == 1:
                         state = 1
                         camera = PiCamera()
                         print "motion detected!"
-                        camera.start_recording('/root/temp/video/video' + str(time.time()) + '.h264', bitrate=4000000)
+                        camera.start_recording('/home/pi/www/video/sec_' + str(time.time()) + '.h264', bitrate=4000000)
                         interact.event("started")
                         while state == 1:
                                 inputValue = GPIO.input(detectPin)
                                 if inputValue == 0:
                                          state = 0
+                        print "motion stopped."
                         camera.stop_recording()
                         camera.close()
                         interact.event("stopped")
