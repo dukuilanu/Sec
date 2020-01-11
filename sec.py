@@ -29,18 +29,19 @@ class interact(object):
                         response = urllib2.urlopen('http://192.168.1.143/api.php?sec=true&pulling=true')
                 except:
                         print "Web server not available."
+                        e = 1
                 if e == 0:
                         html = response.read()
-                for line in html:
-                        if line.rstrip() == "2":
+                        print html
+                        if "enable" in html:
                                 if enabled == 0:
                                         print "enabling motion sensor"
                                 enabled = 1
-                        if line.rstrip() == "3":
+                        if "disable" in html:
                                 if enabled == 1:
                                         print "disabling sensor"
                                 enabled = 0
-                        if line.rstrip() == "1":
+                        if "takePic" in html:
                                 return "picTime"
 
         def event(self, state):
@@ -72,7 +73,6 @@ while 1:
         isPic = interact.pull()
         if isPic == "picTime":
                 print "ispic"
-                interact.smail("pic")
                 camera = PiCamera()
                 camera.rotation = 270
                 timeStamp = str(time.time()).replace( '.', '' )
